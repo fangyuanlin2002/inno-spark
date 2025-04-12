@@ -1,10 +1,11 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth } from "../firebase";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const db = getFirestore();
+const storage = getStorage();
 
 interface UserProfileData {
   userId: string;
@@ -41,7 +42,6 @@ export default function UserProfile() {
         console.log("No user logged in.");
         return;
       }
-
       console.log("Fetching user data for:", auth.currentUser.uid);
       const userRef = doc(db, "users", auth.currentUser.uid);
       const userSnap = await getDoc(userRef);
@@ -58,17 +58,50 @@ export default function UserProfile() {
     fetchUserData();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     if (!userData) return;
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
-  const handleSave = async () => {
-    if (!auth.currentUser || !userData) {
-      console.log("No authenticated user or userData missing.");
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      console.log("No file was selected.");
       return;
     }
+    if (!auth.currentUser) {
+      console.log("User is not authenticated.");
+      return;
+    }
+    const file = e.target.files[0];
+    console.log("File selected:", file);
 
+    // Create a reference in Firebase Storage
+    const storageRef = ref(storage, `profilePictures/${auth.currentUser.uid}`);
+    try {
+      console.log("Attempting to upload file...");
+      const snapshot = await uploadBytes(storageRef, file);
+      console.log("File uploaded successfully. Snapshot:", snapshot);
+      
+      console.log("Retrieving download URL...");
+      const downloadURL = await getDownloadURL(storageRef);
+      console.log("Download URL retrieved:", downloadURL);
+
+      // Update state with the new profile picture URL
+      setUserData((prev) =>
+        prev ? { ...prev, profilePicture: downloadURL } : null
+      );
+    } catch (error) {
+      console.error("Error during file upload or URL retrieval:", error);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!auth.currentUser || !userData) {
+      console.log("No authenticated user or user data missing.");
+      return;
+    }
     try {
       const userRef = doc(db, "users", auth.currentUser.uid);
       console.log("Updating user profile with data:", userData);
@@ -77,12 +110,13 @@ export default function UserProfile() {
         phoneNumber: userData.phoneNumber || "",
         bio: userData.bio || "",
         location: userData.location || "",
+        profilePicture: userData.profilePicture || "",
       });
-
+      console.log("User profile updated successfully in Firestore.");
       alert("Profile updated successfully!");
       setIsEditing(false);
     } catch (error) {
-      console.error("Failed to update profile:", error);
+      console.error("Failed to update Firestore profile:", error);
     }
   };
 
@@ -91,15 +125,56 @@ export default function UserProfile() {
   }
 
   if (!userData) {
-    return <div className="text-xl font-bold">⚠️ No profile found. Please log in.</div>;
+    return (
+      <div className="text-xl font-bold">
+        ⚠️ No profile found. Please log in.
+      </div>
+    );
   }
 
   return (
     <div className="max-w-md mx-auto p-6 border rounded shadow-lg">
       <h2 className="text-2xl font-bold mb-2">👤 User Profile</h2>
       <p className="mb-4 text-sm text-gray-600">
-        Update your account information below. You can edit your username, phone number, bio, and location.
+        Update your account information below. You can edit your username,
+        phone number, bio, location, and profile picture.
       </p>
+      {/* Profile picture at the very top */}
+      <div className="mb-4 flex flex-col items-center">
+        <div className="relative">
+          {userData.profilePicture ? (
+            <img
+              src={userData.profilePicture}
+              alt="Profile Picture"
+              className="w-32 h-32 object-cover rounded-full"
+            />
+          ) : (
+            <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
+              {isEditing ? (
+                <span className="text-gray-500">Add Image</span>
+              ) : (
+                <span className="text-gray-500">No Image</span>
+              )}
+            </div>
+          )}
+          {isEditing && (
+            <label
+              htmlFor="profilePictureInput"
+              className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full cursor-pointer"
+            >
+              <span className="text-white text-lg">+</span>
+            </label>
+          )}
+        </div>
+        <input
+          id="profilePictureInput"
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+      </div>
+      {/* Form fields */}
       <div className="space-y-4">
         <div>
           <label htmlFor="username" className="block font-semibold mb-1">
@@ -170,11 +245,17 @@ export default function UserProfile() {
           />
         </div>
         {isEditing ? (
-          <button onClick={handleSave} className="bg-green-500 text-white px-4 py-2 rounded">
+          <button
+            onClick={handleSave}
+            className="bg-green-500 text-white px-4 py-2 rounded"
+          >
             Save
           </button>
         ) : (
-          <button onClick={() => setIsEditing(true)} className="bg-blue-500 text-white px-4 py-2 rounded">
+          <button
+            onClick={() => setIsEditing(true)}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
             Edit Profile
           </button>
         )}

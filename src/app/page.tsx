@@ -4,6 +4,7 @@ import Auth from "../components/Auth";
 import IdeaForm from "../components/IdeaForm";
 import IdeaList from "../components/IdeaList";
 import UserProfile from "../components/UserProfile";
+import CompleteProfileForm from "../components/CompleteProfileForm";
 import { auth } from "../firebase";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 import { useState, useEffect } from "react";
@@ -120,52 +121,28 @@ export default function Home() {
     }
   };
 
+  const handleProfileFormSubmit = async (newProfile: UserProfileData) => {
+    console.log("Saving new user profile to Firestore:", newProfile);
+    try {
+      await setDoc(doc(db, "users", newProfile.userId), newProfile);
+      setUserProfile(newProfile);
+      setShowInfoForm(false);
+    } catch (error) {
+      console.error("Error saving user profile:", error);
+      alert("Failed to save profile. Please try again.");
+    }
+  };
+
   if (loading) {
     return <div className="text-xl font-bold">🔄 Loading...</div>;
   }
 
   if (showInfoForm) {
-    return (
-      <div className="max-w-md mx-auto p-6 border rounded shadow-lg">
-        <h2 className="text-2xl font-bold mb-4">Complete Your Profile</h2>
-        <form onSubmit={handleFormSubmit} className="flex flex-col space-y-4">
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            value={tempUserData.username || ""}
-            onChange={handleFormChange}
-            required
-            className="border p-2 rounded"
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={tempUserData.email || ""}
-            onChange={handleFormChange}
-            required
-            className="border p-2 rounded"
-            disabled
-          />
-          <select
-            name="role"
-            value={tempUserData.role || ""}
-            onChange={handleFormChange}
-            required
-            className="border p-2 rounded"
-          >
-            <option value="">Select Role</option>
-            <option value="entrepreneur">Entrepreneur</option>
-            <option value="investor">Investor</option>
-            <option value="expert">Expert</option>
-          </select>
-          <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">
-            Save Profile
-          </button>
-        </form>
-      </div>
-    );
+    <CompleteProfileForm
+        userId={tempUserData.userId!}
+        initialData={tempUserData}
+        onSubmit={handleProfileFormSubmit}
+      />
   }
 
   return (
@@ -189,3 +166,5 @@ export default function Home() {
     </div>
   );
 }
+
+
