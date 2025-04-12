@@ -96,46 +96,79 @@ export default function UserProfile() {
 
   return (
     <div className="max-w-md mx-auto p-6 border rounded shadow-lg">
-      <h2 className="text-2xl font-bold mb-4">👤 User Profile</h2>
+      <h2 className="text-2xl font-bold mb-2">👤 User Profile</h2>
+      <p className="mb-4 text-sm text-gray-600">
+        Update your account information below. You can edit your username, phone number, bio, and location.
+      </p>
       <div className="space-y-4">
-        <input
-          type="text"
-          name="username"
-          value={userData.username}
-          onChange={handleChange}
-          className="border p-2 w-full rounded"
-          disabled={!isEditing}
-        />
-        <input
-          type="email"
-          name="email"
-          value={userData.email}
-          className="border p-2 w-full rounded"
-          disabled
-        />
-        <input
-          type="text"
-          name="phoneNumber"
-          value={userData.phoneNumber || ""}
-          onChange={handleChange}
-          className="border p-2 w-full rounded"
-          disabled={!isEditing}
-        />
-        <textarea
-          name="bio"
-          value={userData.bio}
-          onChange={handleChange}
-          className="border p-2 w-full rounded"
-          disabled={!isEditing}
-        />
-        <input
-          type="text"
-          name="location"
-          value={userData.location || ""}
-          onChange={handleChange}
-          className="border p-2 w-full rounded"
-          disabled={!isEditing}
-        />
+        <div>
+          <label htmlFor="username" className="block font-semibold mb-1">
+            Username
+          </label>
+          <input
+            id="username"
+            type="text"
+            name="username"
+            value={userData.username}
+            onChange={handleChange}
+            className="border p-2 w-full rounded"
+            disabled={!isEditing}
+          />
+        </div>
+        <div>
+          <label htmlFor="email" className="block font-semibold mb-1">
+            Email Address
+          </label>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            value={userData.email}
+            className="border p-2 w-full rounded"
+            disabled
+          />
+        </div>
+        <div>
+          <label htmlFor="phoneNumber" className="block font-semibold mb-1">
+            Phone Number
+          </label>
+          <input
+            id="phoneNumber"
+            type="text"
+            name="phoneNumber"
+            value={userData.phoneNumber || ""}
+            onChange={handleChange}
+            className="border p-2 w-full rounded"
+            disabled={!isEditing}
+          />
+        </div>
+        <div>
+          <label htmlFor="bio" className="block font-semibold mb-1">
+            Bio
+          </label>
+          <textarea
+            id="bio"
+            name="bio"
+            value={userData.bio}
+            onChange={handleChange}
+            className="border p-2 w-full rounded"
+            disabled={!isEditing}
+          />
+        </div>
+        <div>
+          <label htmlFor="location" className="block font-semibold mb-1">
+            Location
+          </label>
+          <input
+            id="location"
+            type="text"
+            name="location"
+            value={userData.location || ""}
+            onChange={handleChange}
+            className="border p-2 w-full rounded"
+            disabled={!isEditing}
+          />
+        </div>
         {isEditing ? (
           <button onClick={handleSave} className="bg-green-500 text-white px-4 py-2 rounded">
             Save
