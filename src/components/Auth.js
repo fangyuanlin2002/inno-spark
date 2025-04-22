@@ -28,24 +28,14 @@ export default function Auth() {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4">
+    <div className="flex items-center space-y-4">
       {user ? (
-        <>
-          {user.photoURL && (
-            <img
-              src={user.photoURL}
-              alt="User Avatar"
-              className="w-16 h-16 rounded-full"
-            />
-          )}
-          <p className="text-lg">👋 欢迎, {user.displayName}!</p>
           <button onClick={logout} className="bg-red-500 text-white px-4 py-2 rounded">
-            退出登录
+            Logout
           </button>
-        </>
       ) : (
         <button onClick={login} className="bg-blue-500 text-white px-6 py-2 rounded">
-          使用 Google 登录
+          Sign in with Google
         </button>
       )}
     </div>

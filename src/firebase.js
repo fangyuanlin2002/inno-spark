@@ -9,7 +9,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDN3WJCkajxiz7SVnRmB4DxmWlWKrvUxds",
   authDomain: "innospark-b3206.firebaseapp.com",
   projectId: "innospark-b3206",
-  storageBucket: "innospark-b3206.appspot.com",
+  storageBucket: "innospark-b3206.firebasestorage.app",
   messagingSenderId: "930562636272",
   appId: "1:930562636272:web:516e8fe235cf1a41874535",
   measurementId: "G-J356DP4C6S"
@@ -20,6 +20,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
-const storage = getStorage(app);
+const storage = getStorage(app)
 
-export { auth, googleProvider, db, storage }; 
+export { auth, googleProvider, db, storage };
