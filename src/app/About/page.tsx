@@ -44,6 +44,11 @@ export default function AboutPage() {
             <p>• B.A. in Mathematics, The Ohio State University (Class of 2024)</p>
             <p>• M.S. in Applied Analytics, Columbia University (2024–2025)</p>
           </li>
+            <li className="bg-white bg-opacity-80 p-6 rounded-lg backdrop-blur-sm">
+            <h3 className="text-2xl font-semibold">Yidian Chen</h3>
+            <p className="italic mb-2">UI Contributor</p>
+            <p>• B.S. in Arts and Sciences, The Ohio State University (Expected 2026)</p>
+          </li>
         </ul>
 
         <h2 className="text-3xl font-bold mb-4">Join Us</h2>
